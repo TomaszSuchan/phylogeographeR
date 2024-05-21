@@ -3,7 +3,8 @@
 #' Plot PCoA from AFLP data (individuals with missing data are removed!), ggplot-based so can be styled with additional ggplot arguments, eg. AFLP_plot_PCoA + theme(axis.text = element_text(size = 10))
 #' @import ggplot2
 #' @import vegan
-#' @param aflp_matrix_path AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument.#' @param population_data_path path for the population data file where the first column is the population and the second the strata. Can have a header as long it does not contain any of the population names!
+#' @param aflp_matrix_path AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument.
+#' @param population_data_path path for the population data file where the first column is the population and the second the strata. Can have a header as long it does not contain any of the population names!
 #' @param choices vector containing the PCoA axes to be plotted
 #' @param remove vector of colums to be removed
 #' @export
