@@ -1,15 +1,15 @@
 #' Evanno plot function
 #' 
-#' Plot Evanno delta K plot from AFLP data, ggplot-based so can be styled with additional ggplot arguments, eg. AFLP_plot_Evanno + theme(axis.text = element_text(size = 10))
+#' Plots Evanno delta K plot from structure output data, ggplot-based so can be styled with additional ggplot arguments, eg. plot_Evanno + theme(axis.text = element_text(size = 10))
 #' @import ggplot2
 #' @import pophelper
 #' @param structure_output_path path for the directory with structure output files
 #' @export
 #' @examples
 #' structure_output_path <- "struct-new/output/Pmi"
-#' AFLP_plot_Evanno(structure_output_path)
+#' plot_Evanno(structure_output_path)
 
-AFLP_plot_Evanno <- function(structure_output_path) {
+plot_Evanno <- function(structure_output_path) {
   # Structure
   sfiles <- list.files(structure_output_path, full.names = T)
   slist <- readQ(sfiles, filetype="structure", indlabfromfile = T)
