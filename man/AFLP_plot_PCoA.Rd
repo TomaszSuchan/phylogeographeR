@@ -12,7 +12,9 @@ AFLP_plot_PCoA(
 )
 }
 \arguments{
-\item{aflp_matrix_path}{AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument.#' @param population_data_path path for the population data file where the first column is the population and the second the strata. Can have a header as long it does not contain any of the population names!}
+\item{aflp_matrix_path}{AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument.}
+
+\item{population_data_path}{path for the population data file where the first column is the population and the second the strata. Can have a header as long it does not contain any of the population names!}
 
 \item{choices}{vector containing the PCoA axes to be plotted}
 
