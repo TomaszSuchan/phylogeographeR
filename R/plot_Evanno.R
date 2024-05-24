@@ -48,7 +48,7 @@ plot_Evanno <- function(structure_output_path, full = FALSE) {
     evanno_plot <- ggplot(data=evanno, aes(x=k, y=Value, ymin=Min, ymax=Max)) +
                    geom_line() +
                    geom_point() +
-                   geom_errorbar(width=.2) +
+                   geom_errorbar(width=.3, linewidth=.3) +
                    scale_x_continuous(breaks=evanno$k) +
                    facet_wrap(~Parameter , scales = "free", labeller = as_labeller(facet_labels)) +
                    xlab("K") +
