@@ -8,6 +8,7 @@
 #' @param structure_output_path path for the directory with structure output files
 #' @param population_data_path path for the population data file where the first column is the population and the second the strata. Can have a header as long it does not contain any of the population names!
 #' @param choices vector containing the PCoA axes to be plotted
+#' @param filetype type of the input data ('auto', 'structure','tess2','baps','basic' or 'clumpp')
 #' @param remove vector of colums to be removed
 #' @export
 #' @examples
@@ -24,10 +25,10 @@
 #' mapmixture(strmapdata$str[[k]], strmapdata$pop, pie_size = 0.5, basemap = earth, boundary = boundary, cluster_cols = gg_color_hue(k), arrow_position = "tr")
 
 
-prepare_str_mapdata <- function(structure_output_path, population_data_path) {
+prepare_str_mapdata <- function(structure_output_path, population_data_path, filetype="structure") {
   # Structure
   sfiles <- list.files(structure_output_path, full.names = T)
-  slist <- readQ(sfiles, filetype="structure", indlabfromfile = T)
+  slist <- readQ(sfiles, filetype=filetype, indlabfromfile = T)
  
   #clumpp-like:
   aligned_slist <- alignK(slist)
