@@ -26,6 +26,9 @@ AFLP_plot_PCoA <- function(aflp_matrix_path, population_data_path=NULL, choices=
   Population <- sapply(split_names, function(x) x[1])
   aflp_matrix <- cbind(Population, aflp_matrix)
 
+  # Remove duplicated rows (as in Structure input files)
+  aflp_matrix <- aflp_matrix[!duplicated(aflp_matrix), ]
+
   # Remove rows (samples) containing NA in AFLP data
   aflp_matrix[aflp_matrix==-9] <- NA
   aflp_matrix <- na.omit(aflp_matrix)
