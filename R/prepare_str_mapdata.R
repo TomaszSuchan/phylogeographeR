@@ -6,8 +6,7 @@
 #' @import pophelper
 #' @import mapmixture
 #' @param structure_output_path path for the directory with structure output files
-#' @param population_data_path path for the population data file where the first column is the population and the second the strata. Can have a header as long it does not contain any of the population names!
-#' @param choices vector containing the PCoA axes to be plotted
+#' @param population_data_path path for the population data file where the first column is the population. Can have a header as long it does not contain any of the population names!
 #' @param filetype type of the input data ('auto', 'structure','tess2','baps','basic' or 'clumpp')
 #' @param remove vector of colums to be removed
 #' @export
@@ -56,8 +55,8 @@ prepare_str_mapdata <- function(structure_output_path, population_data_path, fil
   split_names <- strsplit(as.character(Ind), "-")
   Site <- sapply(split_names, function(x) x[1])
   # Crate a dataframe with population information
-  population_data <- read.table(population_data_path, header=TRUE)
-  populations <- population_data[population_data[,1] %in% Site, c(1,3,4)]
+  population_data <- read.table(population_data_path)
+  populations <- population_data[population_data[,1] %in% Site, c(1,2,3)]
   colnames(populations) <- c("Site", "Lat", "Lon")
 
   return(list(str = merged_slist_popdata, pop = populations))
