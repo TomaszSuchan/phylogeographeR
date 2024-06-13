@@ -42,9 +42,9 @@ AFLP_plot_PCoA <- function(aflp_matrix_path, population_data_path=NULL, strata =
   aflp_matrix <- na.omit(aflp_matrix)
 
   # Remove columns containing the same values
-  cols1 <- colSums(aflp_matrix[, -c(1, 2)])[colSums(aflp_matrix[, -c(1, 2, remove)]) == dim(aflp_matrix)[1]]
+  cols1 <- colSums(aflp_matrix[, -c(1, 2)])[colSums(aflp_matrix[, -c(1, 2)]) == dim(aflp_matrix)[1]]
   cols1 <- names(cols1)
-  cols0 <- colSums(aflp_matrix[, -c(1, 2)])[colSums(aflp_matrix[, -c(1, 2, remove)]) == 0]
+  cols0 <- colSums(aflp_matrix[, -c(1, 2)])[colSums(aflp_matrix[, -c(1, 2)]) == 0]
   cols0 <- names(cols0)
   print("Removing columns with monomorphic markers:")
   print(c(cols1, cols0))
