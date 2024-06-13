@@ -26,6 +26,9 @@ AFLP_prepare_eems <- function(output, aflp_matrix_path, population_data_path, re
   Population <- sapply(split_names, function(x) x[1])
   aflp_matrix <- cbind(Population, aflp_matrix)
 
+  # Remove duplicated rows (as in Structure input files)
+  aflp_matrix <- aflp_matrix[!duplicated(aflp_matrix), ]
+
   # Remove rows (samples) containing NA in AFLP data
   aflp_matrix[aflp_matrix==-9] <- NA
   aflp_matrix <- na.omit(aflp_matrix)
@@ -50,7 +53,7 @@ AFLP_prepare_eems <- function(output, aflp_matrix_path, population_data_path, re
   # distances
   dist_matrix <- as.matrix(vegdist(aflp_matrix[, -c(1, remove)], method="jaccard", na.rm=TRUE))
   duplicates <- duplicated(dist_matrix)
-  print("Clonal individuals:")
+  print("Individuals with the same distances (removed):")
   print(aflp_matrix[duplicates,1]) 
   write.table(dist_matrix[!duplicates, !duplicates],
               file=paste(output, ".diffs", sep=""),
