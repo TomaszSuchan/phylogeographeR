@@ -20,6 +20,12 @@ AFLP_plot_PCoA <- function(aflp_matrix_path, population_data_path=NULL, strata =
   
   # hack to remove last column full of NA
   aflp_matrix <- aflp_matrix[,colSums(is.na(aflp_matrix))<nrow(aflp_matrix)]
+  
+  # remove coulumn if specified
+  if(!is.null(remove)){
+    print(paste("Removing column", remove))
+    aflp_matrix <- aflp_matrix[,-c(remove)]
+    }
 
   # Remove duplicated rows (as in Structure input files)
   aflp_matrix <- aflp_matrix[!duplicated(aflp_matrix), ]
@@ -31,16 +37,14 @@ AFLP_plot_PCoA <- function(aflp_matrix_path, population_data_path=NULL, strata =
   Population <- sapply(split_names, function(x) x[1])
   aflp_matrix <- cbind(Population, aflp_matrix)
 
-
-
   # Remove rows (samples) containing NA in AFLP data
   aflp_matrix[aflp_matrix==-9] <- NA
   aflp_matrix <- na.omit(aflp_matrix)
 
   # Remove columns containing the same values
-  cols1 <- colSums(aflp_matrix[, -c(1, 2, remove)])[colSums(aflp_matrix[, -c(1, 2, remove)]) == dim(aflp_matrix)[1]]
+  cols1 <- colSums(aflp_matrix[, -c(1, 2)])[colSums(aflp_matrix[, -c(1, 2, remove)]) == dim(aflp_matrix)[1]]
   cols1 <- names(cols1)
-  cols0 <- colSums(aflp_matrix[, -c(1, 2, remove)])[colSums(aflp_matrix[, -c(1, 2, remove)]) == 0]
+  cols0 <- colSums(aflp_matrix[, -c(1, 2)])[colSums(aflp_matrix[, -c(1, 2, remove)]) == 0]
   cols0 <- names(cols0)
   print("Removing columns with monomorphic markers:")
   print(c(cols1, cols0))
@@ -52,7 +56,7 @@ AFLP_plot_PCoA <- function(aflp_matrix_path, population_data_path=NULL, strata =
   }
 
   # PCoA
-  PCoA <- capscale(aflp_matrix[, -c(1, 2, remove)] ~ 1, distance = "jaccard", na.action = na.omit)
+  PCoA <- capscale(aflp_matrix[, -c(1, 2)] ~ 1, distance = "jaccard", na.action = na.omit)
 
   # Color population groupings if population_data_path is provided:
   if(!is.null(population_data_path)){
