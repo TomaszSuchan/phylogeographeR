@@ -4,7 +4,7 @@
 #' @import vegan
 #' @param aflp_matrix_path AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument.
 #' @param population_data_path path for the population data file where the first column is the population, second the strata, third y and fourth z coordinate. Can have a header as long it does not contain any of the population names!
-#' @param species name of the output files
+#' @param output name of the output files
 #' @param remove vector of colums to be removed
 #' @export
 #' @examples
@@ -13,7 +13,7 @@
 #' population_data_path <- "population_data.txt"
 #' AFLP_plot_structure_map(aflp_matrix_path, population_data_path, c(2,3))AFLP_plot_PCoA(aflp_matrix_path=, population_data_path=NULL, choices=c(1,2))
 
-AFLP_prepare_eems <- function(species, aflp_matrix_path, population_data_path, remove=2) {
+AFLP_prepare_eems <- function(output, aflp_matrix_path, population_data_path, remove=2) {
   
   aflp_matrix <- read.table(aflp_matrix_path, head=T, sep="\t")
   colnames(aflp_matrix)[1] <- "Individual"
@@ -53,7 +53,7 @@ AFLP_prepare_eems <- function(species, aflp_matrix_path, population_data_path, r
   print("Clonal individuals:")
   print(aflp_matrix[duplicates,1]) 
   write.table(dist_matrix[!duplicates, !duplicates],
-              file=paste(species, ".diffs", sep=""),
+              file=paste(output, ".diffs", sep=""),
               quote=FALSE, sep="\t", row.names = FALSE, col.names = FALSE)
   
   # popdata
@@ -61,7 +61,7 @@ AFLP_prepare_eems <- function(species, aflp_matrix_path, population_data_path, r
   popdata <- merge(aflp_matrix[,c(1,remove)], population_data, by.x="Population", by.y="IBD_GRID_CELL")
 
   write.table(popdata[!duplicates, c(5,4)],
-              file=paste(species, ".coord", sep=""),
+              file=paste(output, ".coord", sep=""),
               quote=FALSE, sep="\t", row.names = FALSE, col.names = FALSE)
   
   # stats
