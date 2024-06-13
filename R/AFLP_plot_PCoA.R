@@ -12,7 +12,7 @@
 #' @examples
 #' aflp_matrix_path <- "struct-new/original_input/Cal_Cal_Structure.txt"
 #' population_data_path <- "population_data.txt"
-#' AFLP_plot_PCoA(aflp_matrix_path, population_data_path, c(2,3))
+#' AFLP_plot_PCoA(aflp_matrix_path, population_data_path, strata=4, remove=NULL, choices=c(2,3))
 
 AFLP_plot_PCoA <- function(aflp_matrix_path, population_data_path=NULL, strata = 1, choices=c(1,2), remove=2) {
    
