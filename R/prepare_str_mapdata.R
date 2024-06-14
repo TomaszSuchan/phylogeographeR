@@ -12,7 +12,7 @@
 #' @param remove vector of colums to be removed
 #' @export
 #' @examples
-#' # For finestructure data:
+#' # For faststructure data:
 #' population_data_path <- "test_data/fastStructure/Pta_population_data.txt"
 #' structure_output_path <- "test_data/fastStructure/meanQ"
 #' structure_input_path <- "test_data/fastStructure/Pta_plink.fam"
