@@ -61,7 +61,7 @@ prepare_str_mapdata <- function(structure_output_path, structure_input_path, pop
   }
   else {
     merged_slist <- split_slist 
-  }}
+  }
   
   addPopdata <- function(x){
     Ind <- read.table(structure_input_path, row.names=NULL)[1]
