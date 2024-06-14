@@ -1,0 +1,31 @@
+Data File
+
+#define INFILE  Aal_carp_structure-inputD.txt // (str) name of input data file
+#define OUTFILE Aal_carp_str_noadmix //(str) name of output data file
+#define NUMINDS  54    // (int) number of diploid individuals in data file
+#define NUMLOCI  107   // (int) number of loci in data file
+#define RECESSIVEALLELES 1
+#define LABEL     1       // (B) Input file contains individual labels
+#define POPDATA   0         // (B) Input file contains a population identifier
+#define POPFLAG   0      // (B) Input file contains a flag which says whether to use popinfo when USEPOPINFO==1
+#define PHENOTYPE 0     // (B) Input file contains phenotype information
+#define EXTRACOLS 0 (int) Number of additional columns of data before the genotype data start.
+#define PHASEINFO 0     // (B) the data for each individual contains a line indicating phase
+#define PHASED 0
+#define MARKOVPHASE  1     // (B) the phase info follows a Markov model.
+#define MISSING      -9     // (int) value given to missing genotype data
+#define PLOIDY       2      // (int) ploidy of data
+#define ONEROWPERIND 0    // (B) store data for individuals in a single line
+#define MARKERNAMES  0  (B) data file contains row of marker names
+#define MAPDISTANCES 0     // (B) data file contains row of map distances // between loci
+
+Program Parameters
+
+#define MAXPOPS    2    // (int) number of populations assumed
+#define BURNIN    200000 // (int) length of burnin period
+#define NUMREPS   1000000 // (int) number of MCMC reps after burnin
+
+#define LINKAGE 0
+#define NOADMIX 0
+#define USEPOPINFO 0
+#define FREQSCORR 1
