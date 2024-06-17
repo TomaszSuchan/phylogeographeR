@@ -58,8 +58,7 @@ prepare_str_mapdata <- function(structure_output_path, structure_input_path, pop
       return(y)
     }
     merged_slist <- lapply(split_slist, reduceApplyListOfArrays)
-  }
-  else {
+  } else {
     merged_slist <- split_slist 
   }
   
