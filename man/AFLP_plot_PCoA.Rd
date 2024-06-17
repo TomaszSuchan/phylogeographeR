@@ -7,18 +7,21 @@
 AFLP_plot_PCoA(
   aflp_matrix_path,
   population_data_path = NULL,
+  strata = 1,
   choices = c(1, 2),
   remove = 2
 )
 }
 \arguments{
-\item{aflp_matrix_path}{AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument.}
+\item{aflp_matrix_path}{AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument. Assumes that the first row should be removed and duplicated rows as well (that's how the structure input is usually coded for AFLP).}
 
 \item{population_data_path}{path for the population data file where the first column is the population and the second the strata. Can have a header as long it does not contain any of the population names!}
 
+\item{strata}{coulumn in the population data file used for data stratification}
+
 \item{choices}{vector containing the PCoA axes to be plotted}
 
-\item{remove}{vector of colums to be removed}
+\item{remove}{vector of colums to be removed, defalults to usual population column in structure files. Set as remove=NULL if no column should be removed.}
 }
 \description{
 Plot PCoA from AFLP data (individuals with missing data are removed!), ggplot-based so can be styled with additional ggplot arguments, eg. AFLP_plot_PCoA + theme(axis.text = element_text(size = 10))
@@ -26,5 +29,5 @@ Plot PCoA from AFLP data (individuals with missing data are removed!), ggplot-ba
 \examples{
 aflp_matrix_path <- "struct-new/original_input/Cal_Cal_Structure.txt"
 population_data_path <- "population_data.txt"
-AFLP_plot_PCoA(aflp_matrix_path, population_data_path, c(2,3))
+AFLP_plot_PCoA(aflp_matrix_path, population_data_path, strata=4, remove=NULL, choices=c(2,3))
 }

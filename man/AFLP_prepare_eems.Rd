@@ -4,16 +4,16 @@
 \alias{AFLP_prepare_eems}
 \title{Prepare EEMS input}
 \usage{
-AFLP_prepare_eems(species, aflp_matrix_path, population_data_path, remove = 2)
+AFLP_prepare_eems(output, aflp_matrix_path, population_data_path, remove = 2)
 }
 \arguments{
-\item{species}{name of the output files}
+\item{output}{name of the output files}
 
-\item{aflp_matrix_path}{AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument.}
+\item{aflp_matrix_path}{AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument. Assumes that the first row should be removed and duplicated rows as well (that's how the structure input is usually coded for AFLP).}
 
-\item{population_data_path}{path for the population data file where the first column is the population, second the strata, third y and fourth z coordinate. Can have a header as long it does not contain any of the population names!}
+\item{population_data_path}{path for the population data file where the first column is the population and the second the strata. Can have a header as long it does not contain any of the population names!}
 
-\item{remove}{vector of colums to be removed}
+\item{remove}{vector of colums to be removed, defalults to usual population column in structure files. Set as remove=NULL if no column should be removed.}
 }
 \description{
 Prepare input files for eems. Distances are calculated using jaccard distance, individuals with the same distances are removed (closely related or clonal individuals)
