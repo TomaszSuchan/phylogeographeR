@@ -2,7 +2,6 @@
 #' 
 #' Prepare data for plotting georgraphical map with structure piecharts from AFLP data using the mapmixture package, ggplot-based
 #' @name prepare_str_mapdata
-#' @import ggplot2
 #' @import pophelper
 #' @import mapmixture
 #' @param structure_output_path path for the directory with structure output files
@@ -73,7 +72,7 @@ prepare_str_mapdata <- function(structure_output_path, structure_input_path, pop
   merged_slist_popdata <- lapply(merged_slist, addPopdata)
 
   # Extract population information from individual names
-  split_names <- strsplit(as.character(Ind), "-")
+  split_names <- strsplit(as.character(merged_slist_popdata[[1]]$Ind), "-")
   Site <- sapply(split_names, function(x) x[1])
   # Crate a dataframe with population information
   population_data <- read.table(population_data_path)
