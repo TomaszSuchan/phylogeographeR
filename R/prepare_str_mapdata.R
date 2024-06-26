@@ -3,7 +3,6 @@
 #' Prepare data for plotting georgraphical map with structure piecharts from AFLP data using the mapmixture package, ggplot-based
 #' @name prepare_str_mapdata
 #' @import pophelper
-#' @import mapmixture
 #' @param structure_output_path path for the directory with structure output files
 #' @param structure_input_path path for the structure input file or plink .fam file
 #' @param population_data_path path for the population data file where the first column is the population, second y-coordinate and third x-coordinate. The rest of the columns are ignored. Can have a header as long it does not contain any of the population names!
