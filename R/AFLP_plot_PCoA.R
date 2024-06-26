@@ -3,57 +3,26 @@
 #' Plot PCoA from AFLP data (individuals with missing data are removed!), ggplot-based so can be styled with additional ggplot arguments, eg. AFLP_plot_PCoA + theme(axis.text = element_text(size = 10))
 #' @import ggplot2
 #' @import vegan
-#' @param aflp_matrix_path AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument. Assumes that the first row should be removed and duplicated rows as well (that's how the structure input is usually coded for AFLP).
-#' @param population_data_path path for the population data file where the first column is the population and the second the strata. Can have a header as long it does not contain any of the population names!
+#' @param structure_input_path AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument. Assumes that the first row should be removed and duplicated rows as well (that's how the structure input is usually coded for AFLP).
+#' @param population_data_path path for the population data file where the first column is the population, second y-coordinate and third x-coordinate. The rest of the columns can have strata information (defined by the strata argument). Can have a header as long it does not contain any of the population names!
 #' @param strata coulumn in the population data file used for data stratification
 #' @param axes vector containing the PCoA axes to be plotted
 #' @param remove vector of colums to be removed, defalults to usual population column in structure files. Set as remove=NULL if no column should be removed.
 #' @export
 #' @examples
-#' aflp_matrix_path <- "struct-new/original_input/Cal_Cal_Structure.txt"
-#' population_data_path <- "population_data.txt"
-#' AFLP_plot_PCoA(aflp_matrix_path, population_data_path, strata=4, remove=NULL, axes=c(2,3))
+#' structure_input_path <- "test_data/structure/Aal_carp_structure-inputD.txt"
+#' population_data_path <- "test_data/structure/popdata.txt"
+#' AFLP_plot_PCoA(structure_input_path, population_data_path, strata=5, remove=NULL, axes=c(2,3))
 
-AFLP_plot_PCoA <- function(aflp_matrix_path, population_data_path=NULL, strata = 1, axes=c(1,2), remove=2) {
-   
-  aflp_matrix <- read.table(aflp_matrix_path, head=FALSE, sep="\t", row.names=NULL, skip=1)
+AFLP_plot_PCoA <- function(structure_input_path, population_data_path=NULL, strata = 1, axes=c(1,2), remove=2) {
   
-  # hack to remove last column full of NA
-  aflp_matrix <- aflp_matrix[,colSums(is.na(aflp_matrix))<nrow(aflp_matrix)]
+  aflp_matrix <- load_AFLP(structure_input_path, remove)
   
-  # remove coulumn if specified
-  if(!is.null(remove)){
-    print(paste("Removing column", remove))
-    aflp_matrix <- aflp_matrix[,-c(remove)]
-    }
-
-  # Remove duplicated rows (as in Structure input files)
-  aflp_matrix <- aflp_matrix[!duplicated(aflp_matrix), ]
-
-  colnames(aflp_matrix)[1] <- "Individual"
-
   # Extract population information from individual names
+  colnames(aflp_matrix)[1] <- "Individual"
   split_names <- strsplit(as.character(aflp_matrix$Individual), "-")
   Population <- sapply(split_names, function(x) x[1])
   aflp_matrix <- cbind(Population, aflp_matrix)
-
-  # Remove rows (samples) containing NA in AFLP data
-  aflp_matrix[aflp_matrix==-9] <- NA
-  aflp_matrix <- na.omit(aflp_matrix)
-
-  # Remove columns containing the same values
-  cols1 <- colSums(aflp_matrix[, -c(1, 2)])[colSums(aflp_matrix[, -c(1, 2)]) == dim(aflp_matrix)[1]]
-  cols1 <- names(cols1)
-  cols0 <- colSums(aflp_matrix[, -c(1, 2)])[colSums(aflp_matrix[, -c(1, 2)]) == 0]
-  cols0 <- names(cols0)
-  print("Removing columns with monomorphic markers:")
-  print(c(cols1, cols0))
-  if(length(cols1)>0){
-    aflp_matrix <- aflp_matrix[,!(names(aflp_matrix) %in% cols1)]
-  }
-  if(length(cols0)>0){
-    aflp_matrix <- aflp_matrix[,!(names(aflp_matrix) %in% cols0)]
-  }
 
   # PCoA
   PCoA <- capscale(aflp_matrix[, -c(1, 2)] ~ 1, distance = "jaccard", na.action = na.omit)
