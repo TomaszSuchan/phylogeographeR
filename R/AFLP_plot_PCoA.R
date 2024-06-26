@@ -4,7 +4,7 @@
 #' @import ggplot2
 #' @import vegan
 #' @param structure_input_path AFLP matrix where rows reperesent individuals and columns the markers, no header, first column are individual names in the format Population-Individual (eg. POP1-1), if any additional column should be ommited (eg. with population number) it should be passed using the 'remove' argument. Assumes that the first row should be removed and duplicated rows as well (that's how the structure input is usually coded for AFLP).
-#' @param population_data_path path for the population data file where the first column is the population, second y-coordinate and third x-coordinate. The rest of the columns can have strata information (defined by the strata argument). Can have a header as long it does not contain any of the population names!
+#' @param population_data_path path for the population data file (optional) where the first column is the population, second y-coordinate and third x-coordinate. The rest of the columns can have strata information (defined by the strata argument). Can have a header as long it does not contain any of the population names!
 #' @param strata coulumn in the population data file used for data stratification
 #' @param axes vector containing the PCoA axes to be plotted
 #' @param remove vector of colums to be removed, defalults to usual population column in structure files. Set as remove=NULL if no column should be removed.
