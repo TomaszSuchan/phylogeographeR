@@ -1,6 +1,6 @@
 #' NJ tree plot function
 #' 
-#' Plot NJ tree from AFLP data (individuals with missing data are removed!), ggplot-based so can be styled with additional ggplot arguments, eg. AFLP_plot_NJtree + theme(axis.text = element_text(size = 10))
+#' Plot Jaccard distance based NJ tree from AFLP data (individuals with missing data are removed!), ggplot-based so can be styled with additional ggplot arguments, eg. AFLP_plot_NJtree + theme(axis.text = element_text(size = 10))
 #' @import ggplot2
 #' @import ggtree
 #' @import ape 
