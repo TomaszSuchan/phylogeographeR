@@ -16,7 +16,7 @@ prepare_str_mapdata(
 
 \item{structure_input_path}{path for the structure input file or plink .fam file}
 
-\item{population_data_path}{path for the population data file where the first column is the population. Can have a header as long it does not contain any of the population names!}
+\item{population_data_path}{path for the population data file where the first column is the population, second y-coordinate and third x-coordinate. The rest of the columns are ignored. Can have a header as long it does not contain any of the population names!}
 
 \item{filetype}{type of the input data ('auto', 'structure','tess2','baps','basic' or 'clumpp')}
 
