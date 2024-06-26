@@ -1,7 +1,7 @@
 #' Load AFLP matrix, remove column if specified, remove duplicated rows (as in Structure input files), remove samples containing NA, remove monomorphic markers
 #' @noRd
 
-load_AFLP <- function(structure_input_path, remove=NULL) {
+load_AFLP <- function(structure_input_path, remove_col=NULL) {
 
   aflp_matrix <- read.table(structure_input_path, head=FALSE, sep="\t", row.names=NULL, skip=1)
   
@@ -10,7 +10,7 @@ load_AFLP <- function(structure_input_path, remove=NULL) {
   
   # remove coulumn if specified
   if(!is.null(remove)){
-    print(paste("Removing column", remove))
+    print(paste("Removing column", remove_col))
     aflp_matrix <- aflp_matrix[,-c(remove)]
     }
 
