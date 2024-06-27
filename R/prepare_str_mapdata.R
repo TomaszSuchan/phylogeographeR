@@ -61,7 +61,7 @@ prepare_str_mapdata <- function(structure_output_path, structure_input_path, pop
   }
   
   addPopdata <- function(x){
-    Ind <- read.table(structure_input_path, row.names=NULL)[1]
+    Ind <- read.table(structure_input_path, row.names=NULL, skip=1)[1]
     Ind <- Ind[!duplicated(Ind), ]
     split_names <- strsplit(as.character(Ind), "-")
     Site <- sapply(split_names, function(x) x[1])
