@@ -52,7 +52,7 @@ AFLP_plot_NJtree <- function(structure_input_path, population_data_path=NULL, st
   
   tr <- groupOTU(tr, groups, "Group")
 
-  tree_plot <- ggtree(tr, aes(color=group), layout="daylight")
+  tree_plot <- ggtree(tr, aes(color=Group), layout="daylight")
 
   } else {
   tree_plot <- ggtree(tr, layout="daylight")
