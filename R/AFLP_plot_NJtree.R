@@ -48,7 +48,7 @@ AFLP_plot_NJtree <- function(structure_input_path, population_data_path=NULL, st
                        by.y="V1")
 
 
-  groups <- split(populations$ind, populations$V5)
+  groups <- split(populations[, 2], populations[, 3])
   
   tr <- groupOTU(tr, groups, "group")
 
