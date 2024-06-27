@@ -11,7 +11,7 @@ load_AFLP <- function(structure_input_path, remove_col=NULL) {
   # remove coulumn if specified
   if(!is.null(remove)){
     print(paste("Removing column", remove_col))
-    aflp_matrix <- aflp_matrix[,-c(remove)]
+    aflp_matrix <- aflp_matrix[,-c(remove_col)]
     }
 
   # Remove duplicated rows (as in Structure input files)
