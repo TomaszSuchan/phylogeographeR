@@ -50,7 +50,7 @@ AFLP_plot_NJtree <- function(structure_input_path, population_data_path=NULL, st
 
   groups <- split(populations[, 2], populations[, 3])
   
-  tr <- groupOTU(tr, groups, "group")
+  tr <- groupOTU(tr, groups, "Group")
 
   tree_plot <- ggtree(tr, aes(color=group), layout="daylight") + 
                geom_tiplab(color="black") 
