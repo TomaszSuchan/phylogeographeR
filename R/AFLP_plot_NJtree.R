@@ -57,6 +57,10 @@ AFLP_plot_NJtree <- function(structure_input_path, population_data_path=NULL, st
   } else {
   tree_plot <- ggtree(tr, layout="daylight")
   }
-  geom_tiplab(color="black") 
+
+  if(labels == TRUE){
+    tree_plot <- tree_plot + geom_tiplab(color="black")
+  }
+
   return(tree_plot)
 }
