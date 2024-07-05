@@ -38,12 +38,13 @@ plot_Evanno <- function(structure_output_path, full = FALSE) {
     evanno_max$Parameter <- gsub("max", "", evanno_max$Parameter)
     
     evanno <- merge(merge(evanno_mean, evanno_min, by = c("k", "Parameter"), all.x = TRUE), evanno_max, by = c("k", "Parameter"), all.x = TRUE)
-    
+    evanno$Parameter <- factor(evanno$Parameter, levels = c("elpd", "lnk1", "lnk2", "deltaK"))
+
     facet_labels <- c(
-                    `deltaK` = "\u0394*K*",
-                    `elpd` = "*L*(*K*)",
-                    `lnk1` = "*L*\u2032(*K*)",
-                    `lnk2` = "|*L*\u2033(*K*)|"
+                    `elpd` = "*L*(*K*) \u00B1 SD",
+                    `lnk1` = "*L*\u2032(*K*) \u00B1 SD",
+                    `lnk2` = "|*L*\u2033(*K*)| \u00B1 SD",
+                    `deltaK` = "\u0394*K* "
                     )
     
     evanno_plot <- ggplot(data=evanno, aes(x=k, y=Value, ymin=Min, ymax=Max)) +
