@@ -1,6 +1,6 @@
 #' Prepare AFLP data for mapmixture
 #' 
-#' Prepare data for plotting georgraphical map with structure piecharts from AFLP data using the mapmixture package, ggplot-based
+#' Prepare data with pophelper for plotting georgraphical map with structure piecharts
 #' @name prepare_str_mapdata
 #' @import pophelper
 #' @param structure_output_path path for the directory with structure output files
@@ -39,14 +39,14 @@
 #' mapmixture(strmapdata$str[[as.character(k)]], strmapdata$pop, pie_size = 0.5, basemap = earth, boundary = boundary, cluster_cols = gg_color_hue(k), arrow_position = "tr")
 
 
-prepare_str_mapdata <- function(structure_output_path, structure_input_path, population_data_path, filetype="structure") {
+prepare_str_mapdata <- function(structure_output_path, structure_input_path, filetype="structure", delimiter="-") {
   # Structure
   sfiles <- list.files(structure_output_path, full.names = T)
-  slist <- readQ(sfiles, filetype=filetype, indlabfromfile = F)
+  slist <- pophelper::readQ(sfiles, filetype=filetype, indlabfromfile = F)
  
   #clumpp-like:
-  aligned_slist <- alignK(slist)
-  split_slist <- splitQ(aligned_slist)
+  aligned_slist <- pophelper::alignK(slist)
+  split_slist <- pophelper::splitQ(aligned_slist)
 
   if(filetype=="structure"){
     reduceApplyListOfArrays<- function(x){
@@ -61,22 +61,14 @@ prepare_str_mapdata <- function(structure_output_path, structure_input_path, pop
   }
   
   addPopdata <- function(x){
-    Ind <- read.table(structure_input_path, row.names=NULL, skip=1)[1]
-    Ind <- Ind[!duplicated(Ind), ]
-    split_names <- strsplit(as.character(Ind), "-")
-    Site <- sapply(split_names, function(x) x[1])
-    x <- cbind(Site, Ind, as.data.frame(x))
+    ind <- read.table(structure_input_path, row.names=NULL, skip=1)[1]
+    ind <- ind[!duplicated(ind), ]
+    split_names <- strsplit(as.character(ind), delimiter)
+    site <- sapply(split_names, function(x) x[1])
+    x <- cbind(site, ind, as.data.frame(x))
     return(x)
   }
   merged_slist_popdata <- lapply(merged_slist, addPopdata)
 
-  # Extract population information from individual names
-  split_names <- strsplit(as.character(merged_slist_popdata[[1]]$Ind), "-")
-  Site <- sapply(split_names, function(x) x[1])
-  # Crate a dataframe with population information
-  population_data <- read.table(population_data_path)
-  populations <- population_data[population_data[,1] %in% Site, c(1,2,3)]
-  colnames(populations) <- c("Site", "Lat", "Lon")
-
-  return(list(str = merged_slist_popdata, pop = populations))
+  return(merged_slist_popdata)
 }
