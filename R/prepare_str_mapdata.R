@@ -39,7 +39,7 @@
 #' mapmixture(strmapdata$str[[as.character(k)]], strmapdata$pop, pie_size = 0.5, basemap = earth, boundary = boundary, cluster_cols = gg_color_hue(k), arrow_position = "tr")
 
 
-prepare_str_mapdata <- function(structure_output_path, structure_input_path, filetype="structure", delimiter="-") {
+prepare_str_mapdata <- function(structure_output_path, structure_input_path, filetype="structure", delimiter="_") {
   # Rename "faststructure" to "basic" for pophelper compatibility
   if(filetype=="faststructure"){
     filetype <- "basic"
@@ -70,11 +70,25 @@ prepare_str_mapdata <- function(structure_output_path, structure_input_path, fil
     merged_slist <- split_slist 
   }
   
-  addPopdata <- function(x){
-    ind <- read.table(structure_input_path, row.names=NULL, skip=1)[1]
-    ind <- ind[!duplicated(ind), ]
-    split_names <- strsplit(as.character(ind), delimiter)
+  
+  ind <- read.table(structure_input_path, row.names=NULL)[1]
+  ind <- ind[!duplicated(ind), ]
+  split_names <- strsplit(as.character(ind), delimiter)
+
+  # check that all individuals have the same number of delimiters
+  vals <- sapply(split_names, length)
+  if(!all(vals == vals[1])) stop("Inconsistent number of delimiters in individual names. Check the delimiter argument.")
+
+  # handle different cases based on number of delimiters
+  if (length(split_names[[1]])==1) {
+    stop("Delimiter not found in individual names. Please check the delimiter argument.")
+  } else if (length(split_names[[1]])==2) {
     site <- sapply(split_names, function(x) x[1])
+  } else if (length(split_names[[1]])>2) {
+    site <- sapply(split_names, function(x) paste(x[-length(x)], collapse=delimiter))
+  }
+
+  addPopdata <- function(x){
     x <- cbind(site, ind, as.data.frame(x))
     return(x)
   }
