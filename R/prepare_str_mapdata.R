@@ -6,7 +6,7 @@
 #' @param structure_output_path path for the directory with structure output files
 #' @param structure_input_path path for the structure input file or plink .fam file
 #' @param population_data_path path for the population data file where the first column is the population, second y-coordinate and third x-coordinate. The rest of the columns are ignored. Can have a header as long it does not contain any of the population names!
-#' @param filetype type of the input data ('auto', 'structure','tess2','baps','basic' or 'clumpp')
+#' @param filetype type of the input data ('auto', 'structure','tess2','baps','faststructure' or 'clumpp')
 #' @param remove vector of colums to be removed
 #' @export
 #' @examples
@@ -40,9 +40,19 @@
 
 
 prepare_str_mapdata <- function(structure_output_path, structure_input_path, filetype="structure", delimiter="-") {
+  # Rename "faststructure" to "basic" for pophelper compatibility
+  if(filetype=="faststructure"){
+    filetype <- "basic"
+  }
+
   # Structure
-  sfiles <- list.files(structure_output_path, full.names = T)
-  slist <- pophelper::readQ(sfiles, filetype=filetype, indlabfromfile = F)
+  if(filetype=="basic"){
+    sfiles <- list.files(structure_output_path, pattern="meanQ", full.names = T)
+    slist <- pophelper::readQ(sfiles, filetype=filetype, indlabfromfile = F)
+  } else{
+    sfiles <- list.files(structure_output_path, full.names = T)
+    slist <- pophelper::readQ(sfiles, filetype=filetype, indlabfromfile = F)
+  }
  
   #clumpp-like:
   aligned_slist <- pophelper::alignK(slist)
@@ -68,6 +78,7 @@ prepare_str_mapdata <- function(structure_output_path, structure_input_path, fil
     x <- cbind(site, ind, as.data.frame(x))
     return(x)
   }
+
   merged_slist_popdata <- lapply(merged_slist, addPopdata)
 
   return(merged_slist_popdata)
