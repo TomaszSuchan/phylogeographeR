@@ -45,7 +45,6 @@
 #' 
 #' # Different projection
 #' plot_basemap(xmin = -10, xmax = 10, ymin = 40, ymax = 60, crs = 3035)
-#' }
 #'
 #' @export
 plot_basemap <- function(
@@ -90,48 +89,58 @@ plot_basemap <- function(
     crs <- sf::st_crs(crs)
     
     # Check basemap type and process accordingly
-    is_raster <- FALSE
-    if (!is.null(basemap)) {
-        basemap_class <- class(basemap)[1]
-        is_raster <- basemap_class == "SpatRaster"
+# Check basemap type and process accordingly
+is_raster <- FALSE
+if (!is.null(basemap)) {
+    basemap_class <- class(basemap)[1]
+    is_raster <- basemap_class == "SpatRaster"
+}
+
+# Get basemap
+if (is.null(basemap)) {
+    # Use Natural Earth data
+    world_data <- rnaturalearthdata::countries50
+    map_data <- if ("geometry" %in% names(world_data)) world_data["geometry"] else world_data[, ncol(world_data)]
+    map_data <- sf::st_transform(map_data, crs)
+    
+} else if (is_raster) {
+    # Handle raster basemap safely
+    if (!requireNamespace("terra", quietly = TRUE)) {
+        stop("terra package is required for raster basemaps. Install with: install.packages('terra')")
+    }
+    if (!requireNamespace("ggspatial", quietly = TRUE)) {
+        stop("ggspatial package is required for plotting rasters. Install with: install.packages('ggspatial')")
     }
     
-    # Get basemap
-    if (is.null(basemap)) {
-        # Use Natural Earth data
-        world_data <- rnaturalearthdata::countries50
-        if ("geometry" %in% names(world_data)) {
-            map_data <- world_data["geometry"]
-        } else {
-            map_data <- world_data[, ncol(world_data)]
-        }
-        
-        # Transform to target CRS
-        map_data <- sf::st_transform(map_data, crs)
-        
-    } else if (is_raster) {
-        # Handle raster basemap
-        if (!requireNamespace("terra", quietly = TRUE)) {
-            stop("terra package is required for raster basemaps. Install with: install.packages('terra')")
-        }
-        if (!requireNamespace("ggspatial", quietly = TRUE)) {
-            stop("ggspatial package is required for plotting rasters. Install with: install.packages('ggspatial')")
-        }
-        
-        # Project raster to target CRS if needed
-        if (crs$epsg != 4326) {
-            basemap_projected <- terra::project(basemap, paste0("EPSG:", crs$epsg))
-        } else {
-            basemap_projected <- basemap
-        }
-        
-        # Store for plotting
-        map_data <- basemap_projected
-        
+    # Create target bbox polygon
+    corners <- data.frame(
+        lon = c(xmin, xmax, xmax, xmin, xmin),
+        lat = c(ymin, ymin, ymax, ymax, ymin)
+    )
+    bbox_target <- sf::st_as_sf(corners, coords = c("lon", "lat"), crs = crs) |>
+                   dplyr::summarise(geometry = sf::st_union(geometry))
+    
+    # Transform bbox back to raster CRS
+    bbox_orig <- sf::st_transform(bbox_target, sf::st_crs(basemap))
+    
+    # Convert sf bbox to SpatExtent
+    ext_orig <- terra::ext(terra::vect(bbox_orig))
+    
+    # Crop raster in original CRS
+    basemap_cropped <- terra::crop(basemap, ext_orig)
+    
+    # Then project cropped raster
+    basemap_projected <- if (crs$epsg != sf::st_crs(basemap)$epsg) {
+        terra::project(basemap_cropped, paste0("EPSG:", crs$epsg))
     } else {
-        # Assume it's an sf object
-        map_data <- sf::st_transform(basemap, crs)
+        basemap_cropped
     }
+    
+    map_data <- basemap_projected
+} else {
+    # Assume it's an sf object
+    map_data <- sf::st_transform(basemap, crs)
+}
     
     # Create the plot limits in target CRS
     # Transform corner points from WGS84 to target CRS
