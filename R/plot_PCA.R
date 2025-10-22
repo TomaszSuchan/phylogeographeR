@@ -1,16 +1,19 @@
 #' Plot PCA Results
 #'
 #' Creates a scatter plot of principal component analysis results with variance explained.
+#' Uses combination of colors and shapes for categorical variables. Colors are reused 
+#' with different shapes to create unique combinations.
 #'
-#' @param individuals Character vector of individual/sample names matching rows in eigenvecs
+#' @param individuals Character vector of individual/sample names matching rows in eigenvecs and popdata
 #' @param eigenvecs Matrix or data frame of eigenvectors (samples x PCs), where rows correspond to individuals
 #' @param eigenvals Numeric vector of raw eigenvalues
-#' @param popdata Data frame containing population/sample metadata. First column should contain 
-#'   individual names matching the individuals parameter. No header required.
+#' @param popdata Data frame containing population/sample metadata.
+#'   First column should contain individual names matching the individuals parameter.
 #' @param color_by Integer specifying column index in popdata to color points by. Default is 2.
-#'   Note: Column index refers to the popdata columns (1 = individuals, 2 = first metadata column, etc.)
 #' @param pc1 Integer specifying which PC to plot on x-axis. Default is 1
 #' @param pc2 Integer specifying which PC to plot on y-axis. Default is 2
+#' @param colors Character vector of colors to use for categorical variables. 
+#'   Default is Set1 palette (9 colors). Colors will be recycled with different shapes.
 #'
 #' @return A ggplot2 object
 #'
@@ -19,34 +22,21 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Example data
-#' individuals <- c("Rgl_BAN-01", "Rgl_BAN-02", "Rgl_BAR-01", "Rgl_BAR-02")
-#' eigenvecs <- matrix(rnorm(20), ncol = 5)  # 4 samples, 5 PCs
-#' eigenvals <- c(50, 30, 10, 7, 3)  # raw eigenvalues
+#' # Read popdata
+#' popdata <- read.table("popdata.txt", header = FALSE)
+#' individuals <- popdata$V1
 #' 
-#' # Population data (no header)
-#' popdata <- data.frame(
-#'   ind = individuals,
-#'   pop = c("Rgl_BAN", "Rgl_BAN", "Rgl_BAR", "Rgl_BAR"),
-#'   lat = c(49.20, 49.20, 49.20, 49.20),
-#'   lon = c(19.72, 19.72, 20.20, 20.20),
-#'   type = c("M", "M", "G", "G")
-#' )
-#' 
-#' # Color by population (column 2)
+#' # Plot with default colors
 #' plot_pca(individuals, eigenvecs, eigenvals, popdata, color_by = 2)
 #' 
-#' # Color by type (column 5)
-#' plot_pca(individuals, eigenvecs, eigenvals, popdata, color_by = 5)
-#' 
-#' # Color by PC2
-#' # First need to get PC column index: ncol(popdata) + 2
-#' plot_pca(individuals, eigenvecs, eigenvals, popdata, 
-#'          color_by = ncol(popdata) + 2)
+#' # Plot with custom colors
+#' my_colors <- c("red", "blue", "green", "yellow", "purple", "orange")
+#' plot_pca(individuals, eigenvecs, eigenvals, popdata, color_by = 2, colors = my_colors)
 #' }
 #'
 #' @export
-plot_pca <- function(individuals, eigenvecs, eigenvals, popdata, color_by = 2, pc1 = 1, pc2 = 2) {
+plot_pca <- function(individuals, eigenvecs, eigenvals, popdata, color_by = 2, pc1 = 1, pc2 = 2,
+                     colors = RColorBrewer::brewer.pal(9, "Set1")) {
   
   # Convert eigenvectors to dataframe
   pca_df <- as.data.frame(eigenvecs)
@@ -54,23 +44,16 @@ plot_pca <- function(individuals, eigenvecs, eigenvals, popdata, color_by = 2, p
   # Rename columns to match PC numbers
   colnames(pca_df) <- paste0("PC", 1:ncol(pca_df))
   
-  # Add individuals as first column
-  pca_df <- cbind(individual = individuals, pca_df)
-  
-  # Ensure popdata has column names
-  if(is.null(colnames(popdata)) || colnames(popdata)[1] == "V1") {
-    # Assign generic column names if none exist
-    colnames(popdata) <- paste0("V", 1:ncol(popdata))
-  }
-  
-  # Merge with population data based on individual names
-  # Assuming first column of popdata contains individual names
-  merged_df <- merge(pca_df, popdata, by.x = "individual", by.y = colnames(popdata)[1], all.x = TRUE)
+  # Add individuals as rownames (for reference)
+  rownames(pca_df) <- individuals
   
   # Validate color_by index
   if(color_by < 1 || color_by > ncol(popdata)) {
-    stop(sprintf("color_by must be between 1 and %d (total columns in popdata)", ncol(popdata)))
+    stop(sprintf("color_by must be between 1 and %d (number of columns in popdata)", ncol(popdata)))
   }
+  
+  # Combine PCA data with population data
+  combined_df <- merge(pca_df, popdata, by.x = "row.names", by.y = "V1", all.x = TRUE)
   
   # Calculate variance explained from raw eigenvalues
   total_var <- sum(eigenvals)
@@ -80,27 +63,46 @@ plot_pca <- function(individuals, eigenvecs, eigenvals, popdata, color_by = 2, p
   xlab <- sprintf("PC%d (%.1f%%)", pc1, var_explained[pc1])
   ylab <- sprintf("PC%d (%.1f%%)", pc2, var_explained[pc2])
   
-  # Get column name for legend from popdata
-  fill_label <- colnames(popdata)[color_by]
+  # Get column name for legend
+  fill_col_name <- colnames(popdata)[color_by]
   
-  # Get the color column from merged data
-  # It's at position: 1 (individual) + ncol(pca_df)-1 (PCs) + color_by
-  color_col_index <- ncol(pca_df) + color_by - 1
-  
-  # Create base plot
-  p <- ggplot2::ggplot(merged_df, ggplot2::aes(x = .data[[paste0("PC", pc1)]], 
-                                                y = .data[[paste0("PC", pc2)]],
-                                                fill = .data[[color_col_index]])) +
-    ggplot2::geom_point(size = 3, alpha = 0.7, pch = 21, color = "black") +
-    ggplot2::labs(x = xlab,
-                  y = ylab,
-                  fill = fill_label)
-  
-  # Add appropriate scale based on whether color_by column is numeric
-  if(is.numeric(merged_df[[color_col_index]])) {
-    p <- p + ggplot2::scale_fill_gradient(low = "midnightblue", high = "lightblue")
+  # Check if numeric or categorical
+  if(is.numeric(combined_df[[fill_col_name]])) {
+    # Numeric: use gradient
+    p <- ggplot2::ggplot(combined_df, ggplot2::aes(x = .data[[paste0("PC", pc1)]], 
+                                                    y = .data[[paste0("PC", pc2)]],
+                                                    fill = .data[[fill_col_name]])) +
+      ggplot2::geom_point(size = 3, alpha = 0.7, pch = 21, color = "black") +
+      ggplot2::labs(x = xlab, y = ylab, fill = fill_col_name) +
+      ggplot2::scale_fill_gradient(low = "midnightblue", high = "lightblue")
   } else {
-    p <- p + ggplot2::scale_fill_brewer(palette = "Set1")
+    # Categorical: cycle colors with different shapes
+    unique_groups <- unique(combined_df[[fill_col_name]])
+    n_groups <- length(unique_groups)
+    
+    # Number of colors provided
+    n_colors <- length(colors)
+    
+    # Available shapes (5 filled shapes: circle, square, diamond, triangle up, triangle down)
+    available_shapes <- 21:25
+    n_shapes <- length(available_shapes)
+    
+    # Assign colors and shapes
+    # Color cycles every n_colors groups, shape changes every n_colors groups
+    color_values <- rep(colors, length.out = n_groups)
+    names(color_values) <- unique_groups
+    
+    shape_values <- available_shapes[((seq_along(unique_groups) - 1) %/% n_colors) %% n_shapes + 1]
+    names(shape_values) <- unique_groups
+    
+    p <- ggplot2::ggplot(combined_df, ggplot2::aes(x = .data[[paste0("PC", pc1)]], 
+                                                    y = .data[[paste0("PC", pc2)]],
+                                                    fill = .data[[fill_col_name]],
+                                                    shape = .data[[fill_col_name]])) +
+      ggplot2::geom_point(size = 3, alpha = 0.7, color = "black") +
+      ggplot2::scale_shape_manual(values = shape_values) +
+      ggplot2::scale_fill_manual(values = color_values) +
+      ggplot2::labs(x = xlab, y = ylab, fill = fill_col_name, shape = fill_col_name)
   }
   
   return(p)
