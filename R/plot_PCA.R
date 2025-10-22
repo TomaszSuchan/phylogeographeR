@@ -53,7 +53,7 @@ plot_pca <- function(individuals, eigenvecs, eigenvals, popdata, color_by = 2, p
   }
   
   # Combine PCA data with population data
-  combined_df <- merge(pca_df, popdata, by.x = "row.names", by.y = "V1", all.x = TRUE)
+  combined_df <- merge(pca_df, popdata, by.x = "row.names", by.y = "Individual", all.x = TRUE)
   
   # Calculate variance explained from raw eigenvalues
   total_var <- sum(eigenvals)
